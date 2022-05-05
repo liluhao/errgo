@@ -22,11 +22,11 @@ func new11() (errNew error) {
 	return
 }
 
-func TestNew(t *testing.T)  {
-    var errNew error
+func TestNew(t *testing.T) {
+	var errNew error
 
 	index := 1
-    if index == 1 {
+	if index == 1 {
 		errNew = new1()
 		errNew = Wrap(errNew, "最外层")
 		//addFCByIF(errNew)
@@ -45,24 +45,23 @@ func TestNew(t *testing.T)  {
 	}
 }
 
-
 // 这个主要用于实际项目，需要放到框架中，这里可以看看逻辑。(运行不了)
-func TestControl(t *testing.T)  {
+func TestControl(t *testing.T) {
 
 	err := Service(3)
-		// 打印测试
-		fmt.Printf("%+v\n", err)
-		fmt.Println("++++++++++++++")
-		fmt.Println(err)
-		fmt.Println("++++++++++++++")
-		fmt.Println(Cause(err))
-		// 返回数据到前端
-		if err != nil {
+	// 打印测试
+	fmt.Printf("%+v\n", err)
+	fmt.Println("++++++++++++++")
+	fmt.Println(err)
+	fmt.Println("++++++++++++++")
+	fmt.Println(Cause(err))
+	// 返回数据到前端
+	if err != nil {
 		//	// 集中对错误进行判断
-			handleError(err)
-			return
-		}
-		//app.ResponseSuccess()
+		handleError(err)
+		return
+	}
+	//app.ResponseSuccess()
 
 }
 
@@ -83,8 +82,7 @@ func handleError(err error) {
 	return
 }
 
-
-func Service(id int)  error {
+func Service(id int) error {
 
 	// 两种写法
 	//return DaoWrapf(id)
@@ -102,7 +100,6 @@ func DaoWrapf(id int) (err error) {
 	return
 }
 
-
 // 进阶用法(伪代码)
 func DaoWrapfBetter(id int) (err error) {
 	// 这是gorm库封装好的调用原生标准库中errors功能函数得到的一个错误
@@ -118,7 +115,6 @@ func DaoWrapfBetter(id int) (err error) {
 	return
 
 }
-
 
 func DaoNew(id int) (err error) {
 	// 使用函数Newf可以格式化输入。
