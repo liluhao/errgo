@@ -93,7 +93,7 @@
 
 // new returns an error with the supplied message.
 // new also records the stack trace at the point it was called.
-package errGo
+package errgo
 
 import (
 	"fmt"

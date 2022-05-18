@@ -1,4 +1,4 @@
-package errGo
+package errgo
 
 import (
 	"errors"

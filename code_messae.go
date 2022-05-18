@@ -1,4 +1,4 @@
-package errGo
+package errgo
 
 /*
 	公共错误提示

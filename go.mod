@@ -1,3 +1,3 @@
-module github.com/liluhao/errGo
+module github.com/liluhao/errgo
 
 go 1.18
