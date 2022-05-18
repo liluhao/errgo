@@ -1,3 +1,3 @@
-module 1-19After/test/9/errGo
+module github.com/liluhao/errGo
 
-go 1.16
+go 1.18

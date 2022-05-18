@@ -31,8 +31,8 @@ type CustomError struct {
 }
 
 type Context struct {
-	Field 		string
-	Message		string
+	Field   string
+	Message string
 }
 
 func HandleError(err error) (status int) {
@@ -67,7 +67,7 @@ func (errorType Type) New(msg string) error {
 // You can pass in multiple strings to add placeholders to the error message.
 func (errorType Type) Newf(msg string, args ...interface{}) error {
 	return &CustomError{
-		ErrorType: errorType,
+		ErrorType:     errorType,
 		OriginalError: fmt.Errorf(msg, args...),
 	}
 }
@@ -86,7 +86,7 @@ func (errorType Type) Wrapf(err error, msg string, args ...interface{}) error {
 }
 
 // Error returns the message of a customError
-func (error CustomError) Error() string  {
+func (error CustomError) Error() string {
 	return error.OriginalError.Error()
 }
 
@@ -127,7 +127,6 @@ func Wrapf(err error, msg string, args ...interface{}) error {
 	}
 }
 
-
 // AddErrorContext adds a context to an error
 func AddErrorContext(err error, field, message string) error {
 	context := Context{
@@ -153,7 +152,7 @@ func GetErrorContext(err error) map[string]string {
 	emptyContext := Context{}
 	if customErr, ok := err.(*CustomError); ok || customErr.Context != emptyContext {
 		return map[string]string{
-			"field": customErr.Context.Field,
+			"field":   customErr.Context.Field,
 			"message": customErr.Context.Message,
 		}
 	}
@@ -208,8 +207,6 @@ func (error CustomError) Cause() error {
 func Cause(err error) error {
 	return cause(err)
 }
-
-
 
 // Inherit from the Formatter interface and use the fmt.Printf function
 // to print the desired error message.

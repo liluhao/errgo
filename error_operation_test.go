@@ -1,7 +1,6 @@
 package errGo
 
 import (
-	"1-19After/integralManagement/scs_api/app/smartcampus/models"
 	"errors"
 	"fmt"
 	"testing"
@@ -16,10 +15,12 @@ func new1() error {
 	return new2()
 }
 
-func new11() (errNew error) {
-	errNew = errors.New(ErrorsTest)
+var ErrNew = errors.New(ErrorsTest)
 
-	return
+func new11() (errNew error) {
+	//errNew = errors.New(ErrorsTest)
+
+	return ErrNew
 }
 
 func TestNew(t *testing.T) {
@@ -35,7 +36,7 @@ func TestNew(t *testing.T) {
 	}
 
 	if errNew != nil {
-		fmt.Printf("%+v\n", errNew)
+		fmt.Printf("%+v\n", errNew) //%+v可以识别任何类型
 		fmt.Println("++++++++++++++")
 		fmt.Println(errNew)
 		fmt.Println("++++++++++++++")
@@ -71,9 +72,9 @@ func handleError(err error) {
 	//status := HandleError(err)
 
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
+		if errors.Is(err, ErrNew) {
 			//app.ResponseWithError(c, app.CodeNoUser, status)
-		} else if errors.Is(err, models.FailedStudentHasExisted) {
+		} else if errors.Is(err, ErrNew) {
 			//app.ResponseWithError(c, app.CodeFailedStudentHasExisted, status)
 		}
 		//zap.L().Error("InsertAppraisalStudent failed", zap.Error(err))
@@ -104,7 +105,7 @@ func DaoWrapf(id int) (err error) {
 func DaoWrapfBetter(id int) (err error) {
 	// 这是gorm库封装好的调用原生标准库中errors功能函数得到的一个错误
 	err = errors.New(ErrQuery)
-	// 判断错误属于那种类型，资源未找到，代码错误，还是前端传参——对应三种错误码（Status Code）
+	// 判断错误属于哪种类型，资源未找到，代码错误，还是前端传参——对应三种错误码（Status Code）
 	// 对应三种写法：
 	err = BadRequest.Wrap(err, "测试")
 	err = BadRequest.New("测试")
