@@ -1,4 +1,11 @@
-//  Package errors provides simple error handling primitives.
+package errGo
+
+import (
+	"fmt"
+	"io"
+)
+
+// Package errors provides simple error handling primitives.
 //
 // The traditional error handling idiom in Go is roughly akin to
 //
@@ -93,13 +100,6 @@
 
 // new returns an error with the supplied message.
 // new also records the stack trace at the point it was called.
-package errgo
-
-import (
-	"fmt"
-	"io"
-)
-
 func new(message string) error {
 	return &fundamental{
 		msg:   message,
@@ -141,7 +141,7 @@ func (f *fundamental) Format(s fmt.State, verb rune) {
 	}
 }
 
-func (f *fundamental) ModifyPC(pc uintptr) {
+func (f *fundamental) ModifyPC(pc uintptr){
 	var pcS = []uintptr{pc}
 	*f.Stack = append(pcS, *f.Stack...)
 }
@@ -246,7 +246,6 @@ type withMessage struct {
 	cause error
 	msg   string
 }
-
 func (w *withMessage) Error() string { return w.msg + ": " + w.cause.Error() }
 func (w *withMessage) Cause() error  { return w.cause }
 

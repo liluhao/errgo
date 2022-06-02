@@ -1,10 +1,10 @@
-package errgo
+package errGo
 
 import (
 	"fmt"
 	"io"
 	"path"
-	//"project/utils/config"
+	"project/utils/config"
 	"reflect"
 	"runtime"
 	"strconv"
@@ -21,16 +21,14 @@ type Frame uintptr
 
 // pc returns the program counter for this frame;
 // multiple frames may have the same PC value.
-func (f Frame) pc() uintptr { return uintptr(f) - 1 }
+func (f Frame) pc() uintptr { return uintptr(f) - 1}
 
 // file returns the full path to the file that contains the
 // function for this Frame`s pc
 func (f Frame) file() string {
-	fn := runtime.FuncForPC(f.pc()) //FuncForPC函数返回一个表示调用栈标识符pc对应的调用栈的*Func；每一个调用栈必然是对某个函数的调用；如果该调用栈标识符没有对应的调用栈，函数会返回nil。
-	if fn == nil {
-		return "unknown"
-	}
-	file, _ := fn.FileLine(f.pc()) //FileLine方法返回该调用栈所调用的函数的源代码文件名和行号。如果pc不是f内的调用栈标识符，结果是不精确的。
+	fn := runtime.FuncForPC(f.pc())
+	if fn == nil { return "unknown" }
+	file, _ := fn.FileLine(f.pc())
 	return file
 }
 
@@ -38,36 +36,33 @@ func (f Frame) file() string {
 // function for this Frame`s pc
 func (f Frame) line() int {
 	fn := runtime.FuncForPC(f.pc())
-	if fn == nil {
-		return 0
-	}
-	_, line := fn.FileLine(f.pc()) //返回行号
+	if fn == nil { return 0 }
+	_, line := fn.FileLine(f.pc())
 	return line
 }
 
 // name returns the name of this function, if known
 func (f Frame) name() string {
 	fn := runtime.FuncForPC(f.pc())
-	if fn == nil {
-		return "unknown"
-	}
-	return fn.Name() //Name方法返回该调用栈所调用的函数的名字。
+	if fn == nil { return "unknown" }
+	return fn.Name()
 }
 
-func (f Frame) Format(s fmt.State, verb rune) { //fmt.State是一个接口
+func (f Frame) Format(s fmt.State, verb rune) {
 	switch verb {
 	case 's':
 		switch {
 		case s.Flag('+'):
-			io.WriteString(s, f.name()) //
-			io.WriteString(s, "\n\t")   //\n是换行符号,\t是制表符
+			io.WriteString(s, f.name())
+			io.WriteString(s, "\n\t")
 			// TODO 生产环境和开发环境有不同的错误提示
-			io.WriteString(s, profile(f.file()))
+			if config.ApplicationConfig.Mode == "prod" { io.WriteString(s, profile(f.file()))
+			} else { io.WriteString(s, f.file()) }
 		default:
 			io.WriteString(s, path.Base(f.file()))
 		}
 	case 'd':
-		io.WriteString(s, strconv.Itoa(f.line())) //Itoa函数将数字转化成字符串
+		io.WriteString(s, strconv.Itoa(f.line()))
 	case 'n':
 		io.WriteString(s, funcname(f.name()))
 	case 'v':
@@ -77,12 +72,13 @@ func (f Frame) Format(s fmt.State, verb rune) { //fmt.State是一个接口
 	}
 }
 
+
 // TODO Optimization: stack frames are stored only for methods and
 //  functions that call new or wrap methods and functions
 // Number of layers to store call stack information.
 func callers(layer int) *Stack {
 	const depth = 32
-	var pcs [depth]uintptr
+	var   pcs [depth]uintptr
 	// skip： The number of frames skipped from the top of the stack
 	// pc slice: The method call stack for the goroutine is passed in
 	//n := runtime.Callers(4, pcs[:])
@@ -138,7 +134,7 @@ func (s *Stack) Format(st fmt.State, verb rune) {
 // funcname removes the path prefix component of a function`s name
 // reported by func.Name().
 func funcname(name string) string {
-	i := strings.LastIndex(name, "/") //判断/在name中首次出现的位置，如没有出现则返回-1
+	i := strings.LastIndex(name, "/")
 	name = name[i+1:]
 	i = strings.Index(name, ".")
 	return name[i+1:]
@@ -148,15 +144,13 @@ func funcname(name string) string {
 func profile(name string) string {
 	// If it is a Go library, it is processed by default.
 	// TODO 下面这两个地方是哪种环境的意思。
-	i := strings.Index(name, "go") //判断go在name中首次出现的位置，如没有出现则返回-1
-	name = name[i:]
-	/*if !strings.Contains(name, config.ApplicationConfig.ProName) {
-			i := strings.Index(name, "go")
-			name = name[i:]
-		} else {
-			i := strings.Index(name, config.ApplicationConfig.ProName)
-			fmt.Println(i)
-			name = name[i:]
-	}*/
+	if !strings.Contains(name, config.ApplicationConfig.ProName) {
+		i := strings.Index(name, "go")
+		name = name[i:]
+	} else {
+		i := strings.Index(name, config.ApplicationConfig.ProName)
+		fmt.Println(i)
+		name = name[i:]
+}
 	return name
 }
